@@ -301,7 +301,8 @@ namespace AuthService
                     HttpOnly = true,
                     Secure = true,
                     SameSite = SameSiteMode.None,
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(60)
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(60),
+                    Domain = "deal.zirkon.pw"
                 });
 
 
@@ -373,6 +374,7 @@ namespace AuthService
                     Secure = !isDevelopment,
                     SameSite = SameSiteMode.None, // обязательно для кросс-доменных запросов
                     Expires = DateTimeOffset.UtcNow.AddDays(-1),
+                    Domain = "deal.zirkon.pw",
                     Path = "/"
                 });
                 
