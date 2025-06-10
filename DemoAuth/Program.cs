@@ -185,12 +185,10 @@ namespace AuthService
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimal Authorization Service API V1");
-                c.RoutePrefix = "swagger"; // Serve Swagger UI at root (/)
-                
+                c.RoutePrefix = "swagger"; // URL: https://deal.zirkon.pw/swagger
+
                 c.DefaultModelsExpandDepth(-1);
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-                
-                // Добавляем кастомный JavaScript для автоматической авторизации в Swagger
                 c.InjectJavascript("/swagger-auth.js");
                 
                 // Настройки для работы с cookies в Swagger UI
@@ -345,12 +343,12 @@ namespace AuthService
                 // Установка куки
                 httpContext.Response.Cookies.Append("accessToken", token, new CookieOptions
                 {
-                    HttpOnly = !isSwaggerRequest,             // HttpOnly в обычном UI, но не в Swagger
-                    Secure = false,                           // Отключаем Secure в dev для http://
-                    SameSite = SameSiteMode.Lax,              // Разрешает кросс-порт авторизацию с React
-                    Expires = DateTimeOffset.UtcNow.AddMinutes(15),
-                    Path = "/"
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.None,
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(60)
                 });
+
 
                 // Ответ без токена
                 var response = new
