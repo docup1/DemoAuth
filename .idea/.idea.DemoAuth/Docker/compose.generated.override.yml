@@ -1,0 +1,20 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  auth-api:
+    build:
+      context: "/Users/docup/RiderProjects/DemoAuth/DemoAuth"
+      dockerfile: "Dockerfile"
+      target: "build"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net9.0/DemoAuth.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+    image: "demoauth:dev"
+    ports: []
+    volumes:
+    - "/Users/docup/RiderProjects/DemoAuth/DemoAuth:/app:rw"
+    - "/Users/docup/RiderProjects/DemoAuth:/src:rw"
+    - "/Users/docup/.nuget/packages:/root/.nuget/packages"
+    working_dir: "/app"

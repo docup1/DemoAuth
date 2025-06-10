@@ -1,0 +1,41 @@
+﻿version: '3.8'
+
+services:
+  auth-api:
+    build:
+      context: DemoAuth
+      dockerfile: Dockerfile
+    ports:
+      - "5205:5205"
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=db;Database=authdb;Username=postgres;Password=yourpassword
+      - Jwt__Key=your-secure-jwt-key-here-32-chars-min
+      - Jwt__Issuer=your-issuer
+      - Jwt__Audience=your-audience
+    depends_on:
+      - db
+    networks:
+      - zirkon-network
+    restart: unless-stopped
+
+  db:
+    image: postgres:16.4
+    environment:
+      - POSTGRES_DB=authdb
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=yourpassword
+    ports:
+      - "5555:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./create.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - zirkon-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  zirkon-network:
+    external: true
