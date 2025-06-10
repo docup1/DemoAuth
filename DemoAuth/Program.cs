@@ -185,57 +185,12 @@ namespace AuthService
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minimal Authorization Service API V1");
-                c.RoutePrefix = "swagger"; // URL: https://deal.zirkon.pw/swagger
-
+                c.RoutePrefix = "swagger"; // URL будет /swagger
+    
+                // Убедитесь, что нет лишних настроек, которые могут блокировать доступ
                 c.DefaultModelsExpandDepth(-1);
                 c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-                c.InjectJavascript("/swagger-auth.js");
-                
-                // Настройки для работы с cookies в Swagger UI
-                c.ConfigObject.AdditionalItems.Add("requestInterceptor", 
-                    @"(request) => { 
-                        request.credentials = 'include'; 
-                        request.withCredentials = true;
-                        
-                        // Автоматически добавляем токен из cookie в заголовок для Swagger
-                        const token = document.cookie
-                            .split('; ')
-                            .find(row => row.startsWith('accessToken='))
-                            ?.split('=')[1];
-                        
-                        if (token && !request.headers.Authorization) {
-                            request.headers.Authorization = 'Bearer ' + token;
-                        }
-                        
-                        return request; 
-                    }");
-                
-                // Дополнительные настройки для поддержки cookies
-                c.ConfigObject.AdditionalItems.Add("responseInterceptor", 
-                    @"(response) => { 
-                        // Автоматически устанавливаем авторизацию в Swagger UI после логина
-                        if (response.url.includes('/api/auth/login') && response.status === 200) {
-                            try {
-                                const data = JSON.parse(response.text);
-                                if (data.token) {
-                                    // Устанавливаем токен в Swagger UI
-                                    window.ui.authActions.authorize({
-                                        Bearer: {
-                                            name: 'Bearer',
-                                            schema: {
-                                                type: 'http',
-                                                in: 'header'
-                                            },
-                                            value: data.token
-                                        }
-                                    });
-                                }
-                            } catch (e) {
-                                console.log('Could not auto-authorize:', e);
-                            }
-                        }
-                        return response; 
-                    }");
+
             });
 
             // Endpoints
