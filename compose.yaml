@@ -15,7 +15,7 @@ services:
     depends_on:
       - db
     networks:
-      - zirkon-network
+      - zirkon-net
     restart: unless-stopped
 
   db:
@@ -30,9 +30,12 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./create.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - zirkon-network
+      - zirkon-net
     restart: unless-stopped
 
 volumes:
   postgres_data:
 
+networks:
+  zirkon-net:
+    external: true
