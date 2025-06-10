@@ -1,23 +1,27 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
-USER $APP_UID
+﻿# Вариант 1: Используем стабильную версию .NET 8.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["DemoAuth/DemoAuth.csproj", "DemoAuth/"]
-RUN dotnet restore "DemoAuth/DemoAuth.csproj"
-COPY . .
-WORKDIR "/src/DemoAuth"
-RUN dotnet build "DemoAuth.csproj" -c $BUILD_CONFIGURATION -o /app/build
+# Копируем исходники
+COPY . ./
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "DemoAuth.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+# Восстанавливаем зависимости
+RUN dotnet restore DemoAuth.csproj
 
-FROM base AS final
+# Публикуем проект
+RUN dotnet publish DemoAuth.csproj -c Release -o out --no-restore
+
+# Используем runtime образ
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/out .
+
+# Открываем порт
+EXPOSE 5205
+
+# Устанавливаем переменные окружения
+ENV ASPNETCORE_URLS=http://+:5205
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+# Запуск
 ENTRYPOINT ["dotnet", "DemoAuth.dll"]
