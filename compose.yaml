@@ -36,6 +36,3 @@ services:
 volumes:
   postgres_data:
 
-networks:
-  zirkon-network:
-    external: true
